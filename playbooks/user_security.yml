@@ -1,0 +1,36 @@
+- name: Manage restaurant operation users
+  hosts: restaurants
+  become: true
+
+  tasks:
+    - name: Ensure restaurantops group exists
+      ansible.builtin.group:
+        name: restaurantops
+        state: present
+
+    - name: Ensure ops-user exists
+      ansible.builtin.user:
+        name: ops-user
+        group: restaurantops
+        shell: /bin/bash
+        create_home: true
+        state: present
+
+    - name: Allow ops-user to manage nginx only
+      ansible.builtin.copy:
+        dest: /etc/sudoers.d/ops-user-nginx
+        content: |
+          ops-user ALL=(root) NOPASSWD: /usr/bin/systemctl status nginx
+          ops-user ALL=(root) NOPASSWD: /usr/bin/systemctl start nginx
+          ops-user ALL=(root) NOPASSWD: /usr/bin/systemctl stop nginx
+          ops-user ALL=(root) NOPASSWD: /usr/bin/systemctl restart nginx
+        owner: root
+        group: root
+        mode: '0440'
+        validate: '/usr/sbin/visudo -cf %s'
+
+    - name: Add SSH public key for ops-user
+      ansible.builtin.authorized_key:
+        user: ops-user
+        state: present
+        key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_ed25519.pub') }}"

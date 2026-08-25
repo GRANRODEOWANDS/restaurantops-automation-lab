@@ -1,0 +1,9 @@
+- name: Backup restaurant web files
+  hosts: restaurants
+  become: true
+
+  tasks:
+    - name: Fetch restaurant index.html
+      ansible.builtin.fetch:
+        src: /var/www/html/index.html
+        dest: ../backups/

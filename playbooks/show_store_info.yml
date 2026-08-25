@@ -1,0 +1,13 @@
+- name: Show restaurant store information
+  hosts: restaurants
+  gather_facts: false
+
+  tasks:
+    - name: Display store information
+      ansible.builtin.debug:
+        msg:
+          - "Company: {{ company_name }}"
+          - "Store ID: {{ store_id }}"
+          - "Store Name: {{ store_name }}"
+          - "Business Hours: {{ business_hours }}"
+          - "Server Category: {{ server_category }}"

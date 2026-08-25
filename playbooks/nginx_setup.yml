@@ -1,0 +1,57 @@
+- name: Install nginx on restaurant servers
+  hosts: restaurants
+  become: true
+  serial: 1
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install nginx
+      ansible.builtin.package:
+        name: nginx
+        state: present
+
+    - name: Ensure nginx is running and enabled
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: Deploy restaurant web page
+      ansible.builtin.template:
+        src: ../templates/index.html.j2
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Check restaurant web page
+      ansible.builtin.uri:
+        url: "http://{{ ansible_host }}"
+        status_code: 200
+
+    - name: Ensure web directory exists
+      ansible.builtin.file:
+        path: /var/www/html
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Deploy nginx configuration
+      ansible.builtin.copy:
+        src: ../files/nginx/restaurant.conf
+        dest: /etc/nginx/sites-available/default
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Reload nginx
+
+  handlers:
+    - name: Reload nginx
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded

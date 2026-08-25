@@ -1,0 +1,12 @@
+- name: Restore tokyo web page
+  hosts: tokyo
+  become: true
+
+  tasks:
+    - name: Restore index.html from backup
+      ansible.builtin.copy:
+        src: ../backups/tokyo/var/www/html/index.html
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: '0644'

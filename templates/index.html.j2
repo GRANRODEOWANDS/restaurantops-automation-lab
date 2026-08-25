@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ store_name }} - Penguin Dining</title>
+</head>
+<body>
+  <h1>{{ company_name }}</h1>
+
+  <h2>{{ store_name }}</h2>
+
+  <p>Store ID: {{ store_id }}</p>
+  <p>Business Hours: {{ business_hours }}</p>
+  <p>Server Category: {{ server_category }}</p>
+  <p>Phone: {{ phone_number }}</p>
+  {% if lunch_service %}
+     <p>Lunch Service: Available</p>
+  {% else %}
+     <p>Lunch Service: Not Available</p>
+  {% endif %}
+
+  <h2>Seasonal Menu</h2>
+  <p>Autumn Mushroom Cream Pasta - 1,280 yen</p>
+
+</body>
+</html>

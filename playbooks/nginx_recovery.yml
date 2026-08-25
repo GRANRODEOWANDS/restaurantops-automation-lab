@@ -1,0 +1,25 @@
+- name: Detect and recover nginx failure
+  hosts: restaurants
+  become: true
+  serial: 1
+
+  tasks:
+    - name: Check nginx web service
+      block:
+        - name: Check HTTP response
+          ansible.builtin.uri:
+            url: "http://{{ ansible_host }}"
+            status_code: 200
+            timeout: 5
+
+      rescue:
+        - name: Start nginx service
+          ansible.builtin.service:
+            name: nginx
+            state: started
+
+        - name: Verify HTTP response after recovery
+          ansible.builtin.uri:
+            url: "http://{{ ansible_host }}"
+            status_code: 200
+            timeout: 5
